@@ -1,5 +1,8 @@
 var express = require('express');
 var app = express();
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
 const port = 3000;
 
 var five = require("johnny-five");
@@ -7,7 +10,6 @@ var board = new five.Board({port: "COM8"});
 
 
 board.on("ready", function () {
-    let led = new five.Led(6);
     const leds = [
         {
             name: 'led3',
@@ -46,6 +48,7 @@ board.on("ready", function () {
             brightness: 250
         }];
 
+
     app.get('/leds', (req, res) => {
         const ledsDTO = leds.map((led) => {
             let newLed = {...led};
@@ -60,12 +63,25 @@ board.on("ready", function () {
 
 
     app.post('/leds', (req, res) => {
-        led.on();
+        leds.map((ledObj, i) => {
+            let led = ledObj.led;
+            let ledDTO = req.body[i];
+            if (ledDTO.state && !ledObj.state) {
+                led.on();
+                ledObj.state = true;
+            } else if (!ledDTO.state && ledObj.state) {
+                led.off();
+                ledObj.state = false;
+            }
+            if (ledDTO.brightness !== ledObj.brightness) {
+                led.brightness(ledDTO.brightness);
+                ledObj.brightness = ledDTO.brightness;
+            }
+            return ledObj;
+        });
         res.header("Access-Control-Allow-Origin", "*");
-        console.log("post leds");
-        res.send("led on")
+        res.sendStatus(200);
     });
-
 
 });
 
