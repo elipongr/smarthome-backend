@@ -14,25 +14,25 @@ var board = new five.Board({port: "COM8"});
 board.on("ready", function () {
     const leds = [
         {
-            name: 'led3',
+            name: 'Schlafzimmer EG',
             led: new five.Led(3),
             state: false,
             brightness: 250
         },
         {
-            name: 'led5',
+            name: 'Schlafzimmer OG',
             led: new five.Led(5),
             state: false,
             brightness: 250
         },
         {
-            name: 'led6',
+            name: 'Wohnzimmer',
             led: new five.Led(6),
             state: false,
             brightness: 250
         },
         {
-            name: 'led9',
+            name: 'Reduit',
             led: new five.Led(9),
             state: false,
             brightness: 250
@@ -44,7 +44,7 @@ board.on("ready", function () {
             brightness: 255
         },
         {
-            name: 'led11',
+            name: 'Balkon OG',
             led: new five.Led(11),
             state: false,
             brightness: 250
