@@ -80,7 +80,6 @@ board.on("ready", function () {
             return ledObj;
         });
         res.header("Access-Control-Allow-Origin", "*");
-        res.sendStatus(200);
     });
 
 });
