@@ -32,13 +32,13 @@ board.on("ready", function () {
             brightness: 250
         },
         {
-            name: 'Reduit',
+            name: 'Garage',
             led: new five.Led(9),
             state: false,
             brightness: 250
         },
         {
-            name: 'led10',
+            name: 'Reduit',
             led: new five.Led(10),
             state: false,
             brightness: 255
