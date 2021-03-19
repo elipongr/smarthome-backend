@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var cors = require('cors');
 const bodyParser = require('body-parser');
-ASTRIT DU MÖNGU
+
 app.use(bodyParser.json());
 app.use(cors());
 const port = 3000;
@@ -35,7 +35,9 @@ board.on("ready", function () {
             name: 'Garage',
             led: new five.Led(9),
             state: false,
-            brightness: 250
+            brightness: 250,
+            listenToSensor: false,
+            threshold: 100
         },
         {
             name: 'Reduit',
@@ -48,7 +50,25 @@ board.on("ready", function () {
             led: new five.Led(11),
             state: false,
             brightness: 250
-        }];
+        },
+        {
+            name: 'Garage draussen',
+            led: new five.Led(2),
+            state: false,
+            listenToSensor: true,
+            threshold: 100
+        }
+    ];
+
+    const photoresistor = {
+        sensor: new five.Sensor({
+            pin: "A2",
+            freq: 250
+        })
+    };
+    board.repl.inject({
+        pot: photoresistor.sensor
+    });
 
 
     app.get('/leds', (req, res) => {
@@ -59,10 +79,20 @@ board.on("ready", function () {
         });
         res.header("Access-Control-Allow-Origin", "*");
         res.setHeader('Content-Type', 'application/json');
-        console.log("get leds");
         res.json(ledsDTO);
     });
 
+    photoresistor.sensor.on("data", function (value) {
+        leds.map((ledObj) => {
+            if (ledObj.listenToSensor) {
+                if (ledObj.threshold > value) {
+                    ledObj.led.off();
+                } else {
+                    ledObj.led.on();
+                }
+            }
+        })
+    });
 
     app.post('/leds', (req, res) => {
         leds.map((ledObj, i) => {
@@ -70,20 +100,21 @@ board.on("ready", function () {
             let ledDTO = req.body[i];
             if (ledDTO.state && !ledObj.state) {
                 led.on();
-                ledObj.state = true;
             } else if (!ledDTO.state && ledObj.state) {
                 led.off();
-                ledObj.state = false;
             }
             if (ledDTO.brightness !== ledObj.brightness) {
                 led.brightness(ledDTO.brightness);
-                ledObj.brightness = ledDTO.brightness;
             }
+
+            ledObj.state = ledDTO.state;
+            ledObj.brightness = ledDTO.brightness;
+            ledObj.listenToSensor = ledDTO.listenToSensor;
+            ledObj.threshold = ledDTO.threshold;
             return ledObj;
         });
         res.sendStatus(200);
     });
-
 });
 
 
