@@ -32,14 +32,6 @@ board.on("ready", function () {
             brightness: 250
         },
         {
-            name: 'Garage',
-            led: new five.Led(9),
-            state: false,
-            brightness: 250,
-            listenToSensor: false,
-            threshold: 100
-        },
-        {
             name: 'Reduit',
             led: new five.Led(10),
             state: false,
@@ -50,6 +42,14 @@ board.on("ready", function () {
             led: new five.Led(11),
             state: false,
             brightness: 250
+        },
+        {
+            name: 'Garage',
+            led: new five.Led(9),
+            state: false,
+            brightness: 250,
+            listenToSensor: false,
+            threshold: 100
         },
         {
             name: 'Garage draussen',
@@ -85,7 +85,7 @@ board.on("ready", function () {
     photoresistor.sensor.on("data", function (value) {
         leds.map((ledObj) => {
             if (ledObj.listenToSensor) {
-                if (ledObj.threshold > value) {
+                if (ledObj.threshold < value) {
                     ledObj.led.off();
                 } else {
                     ledObj.led.on();
